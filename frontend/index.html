@@ -1,0 +1,555 @@
+  <title>SIMDUDICOM | Radiology Bridge Dashboard</title>
+
+  <script>
+    if (!localStorage.getItem("jwt_token")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <!-- Google Font: Inter / Outfit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Theme style (AdminLTE) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #f4f6f9;
+    }
+    .brand-link {
+      background: linear-gradient(135deg, #1f4068, #162447);
+      color: #fff !important;
+    }
+    .main-sidebar {
+      background-color: #1a1a2e;
+    }
+    .nav-sidebar .nav-link.active {
+      background-color: #e43f5a !important;
+      color: #fff !important;
+    }
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: none;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid #f0f0f0;
+      border-top-left-radius: 12px !important;
+      border-top-right-radius: 12px !important;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+    .info-box {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .badge-success-glow {
+      background-color: #d4edda;
+      color: #155724;
+      box-shadow: 0 0 10px rgba(40,167,69,0.2);
+    }
+    .badge-danger-glow {
+      background-color: #f8d7da;
+      color: #721c24;
+      box-shadow: 0 0 10px rgba(220,53,69,0.2);
+    }
+    .badge-warning-glow {
+      background-color: #fff3cd;
+      color: #856404;
+      box-shadow: 0 0 10px rgba(255,193,7,0.2);
+    }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Home</a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item mr-3">
+        <span class="nav-link text-muted"><i class="fas fa-circle text-success mr-1"></i> SIMRS Connected (192.168.189.60)</span>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link text-danger font-weight-bold" id="btn-logout" title="Keluar dari Dashboard">
+          <i class="fas fa-sign-out-alt mr-1"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="#" class="brand-link text-center">
+      <span class="brand-text font-weight-bold"><i class="fas fa-project-diagram mr-2"></i>SIMDUDICOM</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar Menu -->
+      <nav class="mt-3">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="#" class="nav-link active" id="nav-dashboard">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Dashboard Overview</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" id="nav-orders">
+              <i class="nav-icon fas fa-list"></i>
+              <p>Order Monitoring</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" id="nav-dicom">
+              <i class="nav-icon fas fa-images"></i>
+              <p>DICOM Studies</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" id="nav-logs">
+              <i class="nav-icon fas fa-history"></i>
+              <p>SATUSEHAT Logs</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" id="nav-settings">
+              <i class="nav-icon fas fa-cog"></i>
+              <p>System Settings</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 font-weight-bold" id="page-title">Dashboard Overview</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid" id="main-content-area">
+
+        <!-- 1. DASHBOARD VIEW (DEFAULT) -->
+        <div id="view-dashboard">
+          <div class="row">
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-file-medical"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Total Order Radiologi</span>
+                  <span class="info-box-number" id="stat-total-orders">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-cloud-upload-alt"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Upload SATUSEHAT</span>
+                  <span class="info-box-number" id="stat-success-uploads">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-exclamation-triangle"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Upload Gagal (Retry)</span>
+                  <span class="info-box-number" id="stat-failed-uploads">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-network-wired"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">MWL Query (Today)</span>
+                  <span class="info-box-number" id="stat-mwl-queries">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-4">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">Grafik Aktivitas Integrasi</div>
+                <div class="card-body">
+                  <canvas id="integrationChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">Status Modality Lokal</div>
+                <div class="card-body p-0">
+                  <ul class="products-list product-list-in-card pl-2 pr-2">
+                    <li class="item">
+                      <div class="product-img"><i class="fas fa-x-ray fa-2x text-muted"></i></div>
+                      <div class="product-info">
+                        <a href="javascript:void(0)" class="product-title">SIMDUDIM (MWL Port 104) <span class="badge badge-success float-right">Active</span></a>
+                        <span class="product-description">DICOM Modality Worklist SCP Server</span>
+                      </div>
+                    </li>
+                    <li class="item">
+                      <div class="product-img"><i class="fas fa-hdd fa-2x text-muted"></i></div>
+                      <div class="product-info">
+                        <a href="javascript:void(0)" class="product-title">SIMDUSTORE (Port 11112) <span class="badge badge-success float-right">Active</span></a>
+                        <span class="product-description">DICOM C-STORE Storage SCP Receiver</span>
+                      </div>
+                    </li>
+
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ORDERS VIEW (HIDDEN) -->
+        <div id="view-orders" style="display:none;">
+          <div class="card">
+            <div class="card-header">Daftar Order Radiologi (Polled dari artha_medika)</div>
+            <div class="card-body table-responsive p-0">
+              <table class="table table-hover text-nowrap">
+                <thead>
+                  <tr>
+                    <th>No. Registrasi (noreg)</th>
+                    <th>Accession No (noradio)</th>
+                    <th>Patient ID (rekmed)</th>
+                    <th>Nama Pasien</th>
+                    <th>Modality</th>
+                    <th>Dokter Perujuk</th>
+                    <th>Order Date</th>
+                    <th>Status Local</th>
+                    <th>SATUSEHAT Status</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                  <tr>
+                    <td colspan="9" class="text-center text-muted py-4">Data sedang dimuat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. DICOM STUDIES VIEW (HIDDEN) -->
+        <div id="view-dicom" style="display:none;">
+          <div class="card">
+            <div class="card-header">DICOM Local Archives & Wado URLs</div>
+            <div class="card-body table-responsive p-0">
+               <table class="table table-hover text-nowrap">
+                <thead>
+                  <tr>
+                    <th>Accession No</th>
+                    <th>Study Instance UID</th>
+                    <th>Series</th>
+                    <th>Instances</th>
+                    <th>Storage Path</th>
+                    <th>WADO (SATUSEHAT)</th>
+                    <th>Uploaded At</th>
+                    <th>Aksi (Viewer)</th>
+                  </tr>
+                </thead>
+                <tbody id="dicom-table-body">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Data sedang dimuat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. LOGS VIEW (HIDDEN) -->
+        <div id="view-logs" style="display:none;">
+          <div class="card">
+            <div class="card-header">Log Transaksi & Integrasi FHIR</div>
+            <div class="card-body table-responsive p-0">
+              <table class="table table-hover text-nowrap">
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Accession No</th>
+                    <th>Resource Type</th>
+                    <th>Action</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-table-body">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">Data sedang dimuat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. SETTINGS VIEW (HIDDEN) -->
+        <div id="view-settings" style="display:none;">
+          <div class="row">
+            <!-- DICOM Storage Settings Card -->
+            <div class="col-md-6">
+              <div class="card card-outline card-danger">
+                <div class="card-header font-weight-bold">
+                  <i class="fas fa-hdd text-danger mr-2"></i>Penyimpanan Fisik DICOM &amp; Modality
+                </div>
+                <div class="card-body">
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Lokasi Server Host</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control bg-light border-0" id="settings-dicom-host-path" readonly>
+                      <small class="text-info mt-1 d-block"><i class="fas fa-info-circle mr-1"></i> Direktori fisik di komputer Windows Host.</small>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Direktori Kontainer</label>
+                    <div class="col-sm-8 text-monospace py-2">
+                      <code id="settings-dicom-container-dir">/storage/dicom</code>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">C-STORE Receiver</label>
+                    <div class="col-sm-8 py-2">
+                      <span class="badge badge-primary" id="settings-dicom-storage-ae">SIMDUDIM_STORE</span> di port <strong id="settings-dicom-cstore-port">11112</strong>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Worklist SCP (MWL)</label>
+                    <div class="col-sm-8 py-2">
+                      <span class="badge badge-primary" id="settings-dicom-mwl-ae">SIMDUDIM</span> di port <strong id="settings-dicom-mwl-port">104</strong>
+                    </div>
+                  </div>
+
+                  <hr>
+                  <div class="alert alert-dark border-secondary text-sm mb-0">
+                    <h6 class="font-weight-bold text-warning"><i class="fas fa-edit mr-1"></i> Cara Mengubah Folder Penyimpanan:</h6>
+                    <ol class="pl-3 mb-0 text-muted">
+                      <li>Buka file <code class="text-light">.env</code> di folder utama server Anda.</li>
+                      <li>Cari baris <code class="text-light">LOCAL_DICOM_STORAGE_PATH</code>.</li>
+                      <li>Ubah nilainya ke folder pilihan Anda (contoh: <code class="text-light">E:/penyimpanan_dicom</code>).</li>
+                      <li>Jalankan perintah berikut di PowerShell untuk merestart kontainer:
+                        <pre class="bg-black text-success p-2 rounded mt-1 mb-0 text-xs text-monospace">docker compose down&#10;docker compose up -d</pre>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Database & Webhook Settings Card -->
+            <div class="col-md-6">
+              <div class="card card-outline card-primary">
+                <div class="card-header font-weight-bold">
+                  <i class="fas fa-database text-primary mr-2"></i>Koneksi Database &amp; Webhook
+                </div>
+                <div class="card-body">
+                  <h6 class="font-weight-bold text-primary border-bottom pb-1 mb-3">Database SIMRS artha_medika</h6>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Host SQL Server</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control bg-light border-0" id="settings-simrs-host" readonly>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Nama Database</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control bg-light border-0" id="settings-simrs-db" readonly>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">User &amp; Password</label>
+                    <div class="col-sm-8">
+                      <span class="text-monospace" id="settings-simrs-credentials"></span>
+                    </div>
+                  </div>
+
+                  <h6 class="font-weight-bold text-success border-bottom pb-1 mt-4 mb-3">Webhook Callback SIMRS</h6>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Webhook URL</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control bg-light border-0" id="settings-webhook-url" placeholder="Belum dikonfigurasi" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SATUSEHAT Settings Card -->
+              <div class="card card-outline card-success">
+                <div class="card-header font-weight-bold">
+                  <i class="fas fa-cloud-upload-alt text-success mr-2"></i>Platform SATUSEHAT Kemenkes (Production)
+                </div>
+                <div class="card-body">
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">FHIR Endpoint</label>
+                    <div class="col-sm-8 text-monospace text-xs py-2">
+                      <span id="settings-satusehat-base">-</span>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Organization ID</label>
+                    <div class="col-sm-8">
+                      <span class="badge badge-success-glow" id="settings-satusehat-org">-</span>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Client ID</label>
+                    <div class="col-sm-8 text-monospace text-xs py-2">
+                      <span id="settings-satusehat-client">-</span>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label text-muted">Client Secret</label>
+                    <div class="col-sm-8 text-monospace text-xs py-2">
+                      <span id="settings-satusehat-secret">••••••••••••</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2026 <a href="#">SIMDUDICOM Bridge</a>.</strong> All rights reserved.
+  </footer>
+
+  <!-- Modal DICOM Web Viewer -->
+  <div class="modal fade" id="dicomViewerModal" tabindex="-1" role="dialog" aria-labelledby="dicomViewerTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content bg-dark text-light" style="border-radius: 16px; border: 1px solid #444; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="modal-header border-secondary bg-black" style="padding: 12px 20px;">
+          <h5 class="modal-title font-weight-bold" id="dicomViewerTitle">
+            <i class="fas fa-file-image text-danger mr-2"></i>DICOM Web Viewer
+          </h5>
+          <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close" style="opacity: 0.8; outline: none;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-0 bg-black position-relative" style="height: 60vh; min-height: 450px; display: flex; flex-direction: column;">
+          
+          <!-- Viewport Viewer -->
+          <div class="flex-grow-1 position-relative w-100 h-100" style="overflow: hidden;">
+            <!-- Viewport Element untuk Cornerstone -->
+            <div id="dicom-viewport" style="width: 100%; height: 100%; min-height: 450px; background-color: #000; outline: none;" oncontextmenu="return false;"></div>
+            
+            <!-- Metadata Overlay (Top-Left) -->
+            <div id="viewer-patient-overlay" class="position-absolute text-monospace text-xs" style="top: 15px; left: 15px; text-shadow: 1px 1px 2px #000; pointer-events: none; color: #00ffcc; line-height: 1.4; z-index: 10;">
+              <div>PASIEN: <span id="overlay-patient-name">-</span></div>
+              <div>ID: <span id="overlay-patient-id">-</span></div>
+              <div>ACSN: <span id="overlay-acsn">-</span></div>
+            </div>
+
+            <!-- Metadata Overlay (Top-Right) -->
+            <div id="viewer-modality-overlay" class="position-absolute text-monospace text-xs" style="top: 15px; right: 15px; text-shadow: 1px 1px 2px #000; pointer-events: none; color: #00ffcc; text-align: right; line-height: 1.4; z-index: 10;">
+              <div>STUDY UID: <span id="overlay-study-uid" style="font-size: 9px;">-</span></div>
+              <div>MODALITY: <span id="overlay-modality">-</span></div>
+              <div>SLICE: <span id="overlay-slice-index">0</span>/<span id="overlay-slice-total">0</span></div>
+            </div>
+
+            <!-- Tool Loading Indicator -->
+            <div id="viewer-loading" class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center" style="top:0; left:0; background: rgba(0,0,0,0.6); z-index: 100; display: none;">
+              <div class="text-center">
+                <i class="fas fa-spinner fa-spin fa-3x text-danger mb-2"></i>
+                <div>Memuat Citra DICOM...</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Slider Multi-slice (muncul hanya jika > 1 citra) -->
+          <div id="viewer-slider-container" class="bg-black px-4 py-2 border-top border-secondary" style="display: none;">
+            <div class="d-flex align-items-center">
+              <span class="text-xs text-muted mr-3">Slice:</span>
+              <input type="range" class="custom-range flex-grow-1" id="viewer-slice-range" min="0" max="0" value="0">
+              <span class="text-xs text-monospace ml-3" id="viewer-slice-label">1/1</span>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Footer / Toolbar -->
+        <div class="modal-footer border-secondary justify-content-between bg-black py-2 px-3">
+          <div class="d-flex align-items-center">
+            <small class="text-muted mr-3"><i class="fas fa-info-circle mr-1"></i> Klik kiri & seret: atur Brightness/Contrast (W/L). Scroll: Zoom. Klik kanan & seret: Pan.</small>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline-light btn-sm btn-tool-action active" id="tool-wwwc" title="Window/Level (Brightness/Contrast)">
+              <i class="fas fa-adjust mr-1"></i> W/L
+            </button>
+            <button type="button" class="btn btn-outline-light btn-sm btn-tool-action" id="tool-pan" title="Pan (Geser)">
+              <i class="fas fa-arrows-alt mr-1"></i> Pan
+            </button>
+            <button type="button" class="btn btn-outline-light btn-sm btn-tool-action" id="tool-zoom" title="Zoom">
+              <i class="fas fa-search-plus mr-1"></i> Zoom
+            </button>
+            <button type="button" class="btn btn-outline-light btn-sm" id="tool-reset" title="Reset Tampilan">
+              <i class="fas fa-sync-alt mr-1"></i> Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- ChartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- dicomParser -->
+<script src="https://unpkg.com/dicom-parser@1.8.21/dist/dicomParser.js"></script>
+<!-- cornerstone-core -->
+<script src="https://unpkg.com/cornerstone-core@2.3.0/dist/cornerstone.js"></script>
+<!-- cornerstoneWADOImageLoader -->
+<script src="https://unpkg.com/cornerstone-wado-image-loader@3.3.2/dist/cornerstoneWADOImageLoader.bundle.min.js"></script>
+
+<script src="js/app.js"></script>
+</body>
+</html>

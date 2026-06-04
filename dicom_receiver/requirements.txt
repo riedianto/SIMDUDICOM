@@ -1,0 +1,5 @@
+pydicom==2.4.4
+pynetdicom==2.1.0
+pyodbc==5.1.0
+celery==5.4.0
+redis==5.0.4

@@ -1,0 +1,37 @@
+# Environment Variables
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Node / Frontend (jika ada build tools ke depannya)
+node_modules/
+dist/
+build/
+.npm
+.eslintcache
+
+# Logs
+*.log
+logs/
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local Storage/Database
+storage/dicom/*
+!storage/dicom/.gitkeep
+*.db
+*.sqlite3

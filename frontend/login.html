@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIMDUDICOM | Login</title>
+
+  <!-- Google Font: Outfit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Theme style (AdminLTE) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #f4f6f9 !important;
+    }
+    .login-box {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      width: 380px;
+    }
+    .card {
+      border-radius: 12px !important;
+      border: none;
+    }
+    .card-header {
+      border-top-left-radius: 12px !important;
+      border-top-right-radius: 12px !important;
+      background-color: #ffffff;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 25px 20px;
+    }
+    .login-logo-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1f4068;
+      margin-bottom: 0;
+    }
+    .form-control {
+      height: 44px;
+      border-radius: 6px;
+      border-color: #ced4da;
+    }
+    .input-group-text {
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+      background-color: #f8f9fa;
+      color: #6c757d;
+      border-left: 0;
+    }
+    .input-group > .form-control {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      border-right: 0;
+    }
+    .btn-primary {
+      background-color: #1f4068;
+      border-color: #1f4068;
+      height: 44px;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+      background-color: #162447;
+      border-color: #162447;
+    }
+    .captcha-box-text {
+      background-color: #f8f9fa;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #28a745;
+      letter-spacing: 2px;
+      padding: 8px 12px;
+      flex-grow: 1;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="hold-transition login-page">
+
+<div class="login-box">
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <div class="login-logo-text">
+        <i class="fas fa-project-diagram mr-2"></i><b>SIMDU</b>DICOM
+      </div>
+      <span class="text-xs text-muted">Radiology Integration Bridge Dashboard</span>
+    </div>
+    <div class="card-body login-card-body p-4">
+      <p class="login-box-msg text-sm text-muted mb-3">Silakan masuk menggunakan akun administrator</p>
+
+      <div class="alert alert-danger text-sm" id="login-error" style="display: none; border-radius: 6px;"></div>
+
+      <form id="loginForm">
+        <div class="form-group mb-3">
+          <label class="text-xs text-muted font-weight-bold mb-1">USERNAME</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="username" placeholder="Masukkan username" required autocomplete="username">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="text-xs text-muted font-weight-bold mb-1">PASSWORD</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="password" placeholder="Masukkan password" required autocomplete="current-password">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="text-xs text-muted font-weight-bold mb-1">VERIFIKASI CAPTCHA</label>
+          <div class="d-flex align-items-center mb-2">
+            <div class="captcha-box-text" id="captcha-text">0 + 0</div>
+            <button type="button" class="btn btn-outline-secondary ml-2" id="btn-refresh-captcha" style="height: 40px; width: 40px;" title="Muat ulang soal">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+          <input type="number" class="form-control text-center" id="captcha-answer" placeholder="Berapa hasil perhitungan di atas?" required>
+          <input type="hidden" id="captcha-token">
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block" id="btn-login-submit">
+              MASUK <i class="fas fa-sign-in-alt ml-1"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery & Bootstrap 4 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    const API_BASE = '/api';
+
+    // Pengecekan awal: Jika sudah login, langsung lempar ke index.html
+    if (localStorage.getItem("jwt_token")) {
+      window.location.href = "index.html";
+    }
+
+    // Fungsi mengambil Captcha baru dari server
+    function fetchCaptcha() {
+      $("#captcha-answer").val("");
+      $("#captcha-text").text("...");
+      $("#captcha-token").val("");
+      
+      $.getJSON(`${API_BASE}/captcha`, function(res) {
+        if (res.success) {
+          $("#captcha-text").text(`${res.puzzle} = ?`);
+          $("#captcha-token").val(res.captcha_token);
+        } else {
+          $("#captcha-text").text("Error");
+        }
+      }).fail(function() {
+        $("#captcha-text").text("Koneksi Gagal");
+      });
+    }
+
+    // Load captcha saat halaman dibuka
+    fetchCaptcha();
+
+    // Event tombol refresh captcha
+    $("#btn-refresh-captcha").click(function() {
+      fetchCaptcha();
+    });
+
+    // Form submit handler
+    $("#loginForm").submit(function(e) {
+      e.preventDefault();
+      $("#login-error").hide();
+      
+      const username = $("#username").val();
+      const password = $("#password").val();
+      const captchaAnswer = $("#captcha-answer").val();
+      const captchaToken = $("#captcha-token").val();
+
+      const submitBtn = $("#btn-login-submit");
+      submitBtn.prop("disabled", true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Memproses...');
+
+      $.ajax({
+        url: `${API_BASE}/login`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          username: username,
+          password: password,
+          captcha_token: captchaToken,
+          captcha_answer: captchaAnswer
+        }),
+        success: function(res) {
+          if (res.access_token) {
+            // Simpan token JWT dan arahkan ke dashboard
+            localStorage.setItem("jwt_token", res.access_token);
+            window.location.href = "index.html";
+          } else {
+            showError("Terjadi kesalahan sistem.");
+            fetchCaptcha();
+            resetButton();
+          }
+        },
+        error: function(xhr) {
+          let errorMsg = "Koneksi ke server gagal.";
+          if (xhr.responseJSON && xhr.responseJSON.detail) {
+            errorMsg = xhr.responseJSON.detail;
+          }
+          showError(errorMsg);
+          fetchCaptcha();
+          resetButton();
+        }
+      });
+    });
+
+    function showError(msg) {
+      $("#login-error").text(msg).fadeIn();
+    }
+
+    function resetButton() {
+      $("#btn-login-submit").prop("disabled", false).html('MASUK <i class="fas fa-sign-in-alt ml-1"></i>');
+    }
+  });
+</script>
+</body>
+</html>

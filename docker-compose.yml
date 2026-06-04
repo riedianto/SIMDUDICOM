@@ -1,0 +1,143 @@
+services:
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8026:8026"
+      - "104:104"
+      - "11104:104"
+      - "11112:11112"
+    depends_on:
+      - backend-api
+      - mwl-scp
+      - dicom-receiver
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - bridge-net
+
+  bridge-db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    user: root
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Bridge_Password123!
+      - MSSQL_PID=Developer
+      - TZ=Asia/Jakarta
+    ports:
+      - "14330:1433"
+    volumes:
+      - bridge-db-data:/var/opt/mssql
+    networks:
+      - bridge-net
+
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    depends_on:
+      - bridge-db
+    entrypoint: >
+      /bin/bash -c "
+      echo 'Waiting for SQL Server to start...' &&
+      sleep 30 &&
+      echo 'Running init.sql...' &&
+      /opt/mssql-tools18/bin/sqlcmd -S bridge-db -U sa -P 'Bridge_Password123!' -i /init.sql -C &&
+      echo 'Running migrate_add_noreg.sql...' &&
+      /opt/mssql-tools18/bin/sqlcmd -S bridge-db -U sa -P 'Bridge_Password123!' -i /migrate_add_noreg.sql -C &&
+      echo 'SQL initialization completed!'"
+    volumes:
+      - ./database/init.sql:/init.sql
+      - ./database/migrate_add_noreg.sql:/migrate_add_noreg.sql
+    networks:
+      - bridge-net
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - bridge-net
+
+  backend-api:
+    build:
+      context: ./backend
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Jakarta
+    volumes:
+      - ${LOCAL_DICOM_STORAGE_PATH:-./storage/dicom}:/storage/dicom:ro
+    depends_on:
+      - bridge-db
+      - redis
+    networks:
+      - bridge-net
+
+  celery-worker:
+    build:
+      context: ./backend
+    command: celery -A app.tasks worker --loglevel=info
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Jakarta
+    volumes:
+      - ${LOCAL_DICOM_STORAGE_PATH:-./storage/dicom}:/storage/dicom
+    depends_on:
+      - redis
+      - bridge-db
+    networks:
+      - bridge-net
+
+  mwl-scp:
+    build:
+      context: ./mwl
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Jakarta
+    depends_on:
+      - bridge-db
+    networks:
+      - bridge-net
+
+  dicom-receiver:
+    build:
+      context: ./dicom_receiver
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Jakarta
+    ports:
+      - "4242:11112"   # Direct expose port 4242 → bypass nginx untuk C-STORE
+    volumes:
+      - ${LOCAL_DICOM_STORAGE_PATH:-./storage/dicom}:/storage/dicom
+    depends_on:
+      - bridge-db
+    networks:
+      - bridge-net
+
+  polling-engine:
+    build:
+      context: ./backend
+    command: python -m app.services.polling_engine
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Jakarta
+    depends_on:
+      - bridge-db
+    restart: always
+    networks:
+      - bridge-net
+
+networks:
+  bridge-net:
+    driver: bridge
+
+volumes:
+  bridge-db-data:
